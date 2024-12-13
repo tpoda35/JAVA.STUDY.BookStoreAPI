@@ -26,7 +26,7 @@ public class AppUser {
     @Length(min = 5, max = 20, message = "Username must be between 5 and 20 characters.")
     private String username;
 
-    @NotBlank(message = "Username field cannot be blank.")
+    @NotBlank(message = "Email field cannot be blank.")
     @Email(message = "Email is invalid.")
     private String email;
 

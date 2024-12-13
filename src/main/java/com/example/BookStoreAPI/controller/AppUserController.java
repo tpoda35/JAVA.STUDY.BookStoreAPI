@@ -36,6 +36,8 @@ public class AppUserController {
     }
 
     @Operation(summary = "Gives back a specific user.")
+    @ApiResponse(responseCode = "404", description = "User not found.")
+    @ApiResponse(responseCode = "200", description = "User found.")
     @GetMapping("/{id}")
     public CompletableFuture<ResponseEntity<AppUser>> getUser(@PathVariable Long id){
         return appUserService.getUser(id)
@@ -44,10 +46,18 @@ public class AppUserController {
     }
 
     @Operation(summary = "Adds a user to the database.")
+    @ApiResponse(responseCode = "201", description = "User successfully added.")
     @PostMapping("/addUser")
     public CompletableFuture<ResponseEntity<AppUser>> addUser(@RequestBody @Valid AppUserDto appUserDto){
         return appUserService.addUser(appUserDto)
-                .thenApply(appUser -> ResponseEntity.status(HttpStatus.CREATED).body(appUser))
-                .exceptionally(ex -> ResponseEntity.status(HttpStatus.CONFLICT).build());
+                .thenApply(appUser -> ResponseEntity.status(HttpStatus.CREATED).body(appUser));
+    }
+
+    @Operation(summary = "Deletes a user.")
+    @ApiResponse(responseCode = "204", description = "User successfully removed.")
+    @DeleteMapping("/deleteUser/{id}")
+    public CompletableFuture<ResponseEntity<Void>> deleteUser(@PathVariable Long id){
+        return appUserService.deleteUser(id)
+                .thenApply(aVoid -> ResponseEntity.noContent().build());
     }
 }

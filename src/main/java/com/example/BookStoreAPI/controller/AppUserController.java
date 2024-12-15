@@ -60,4 +60,11 @@ public class AppUserController {
         return appUserService.deleteUser(id)
                 .thenApply(aVoid -> ResponseEntity.noContent().build());
     }
+
+    @PutMapping("/updateUser/{id}")
+    public CompletableFuture<ResponseEntity<AppUser>> updateUser(@PathVariable Long id,
+                                                              @RequestBody @Valid AppUserDto appUserDto){
+        return appUserService.updateUser(id, appUserDto)
+                .thenApply(ResponseEntity.ok()::body);
+    }
 }

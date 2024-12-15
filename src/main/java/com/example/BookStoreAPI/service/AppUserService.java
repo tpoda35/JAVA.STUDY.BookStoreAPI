@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@Transactional
 public class AppUserService {
 
     @Autowired
@@ -29,16 +28,19 @@ public class AppUserService {
     }
 
     @Async
+    @Transactional
     public CompletableFuture<List<AppUser>> getAllUser() {
         return CompletableFuture.supplyAsync(userRepository::findAll);
     }
 
     @Async
+    @Transactional
     public CompletableFuture<AppUser> getUser(Long id){
         return CompletableFuture.supplyAsync(() -> userRepository.findById(id).orElse(null));
     }
 
     @Async
+    @Transactional
     public CompletableFuture<AppUser> addUser(@Valid AppUserDto appUserDto){
         Optional<AppUser> userExists = userRepository.findByEmail(appUserDto.getEmail());
         if (userExists.isPresent()){
@@ -54,9 +56,10 @@ public class AppUserService {
     }
 
     @Async
+    @Transactional
     public CompletableFuture<Void> deleteUser(Long id){
         if (userRepository.findById(id).isEmpty()){
-            throw new EntityNotFoundException("User with id " + id + " not found");
+            throw new EntityNotFoundException("User with id " + id + " not found.");
         }
 
         try {
@@ -66,5 +69,15 @@ public class AppUserService {
         } catch (Exception ex){
             throw new DeleteException("Delete failed with the next id: " + id);
         }
+    }
+
+    @Async
+    @Transactional
+    public CompletableFuture<AppUser> updateUser(Long id, @Valid AppUserDto appUserDto){
+        AppUser appUser = userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("User with id " + id + " not found."));
+
+        appUser.setUsername(appUserDto.getUsername()); //Not working
+        return CompletableFuture.completedFuture(userRepository.save(appUser));
     }
 }
